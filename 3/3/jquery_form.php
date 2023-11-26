@@ -3,45 +3,55 @@
 include 'page.php';
 
 $page = new Page('Login Page');
-$page->description('Login');
-$page->keywords('login, authentication, website');
+$page->doctype('xhtml strict');
+$page->access('all');
+$page->title('Login Page');
+$page->description('Login Page');
+$page->keywords('isok, login');
 $page->robots(true);
-$page->body('style="background-color: #f0f0f0;"');
+$page->charset('utf-8');
+$page->jquery('$(function() {
+            $("#register-form").validate({
+                rules: {
+                    name: "required",
+                    gender: "required",
+                    address: "required",
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    username: "required",
+                    password: {
+                        required: true,
+                        minlength: 5
+                    }
+                },
+                messages: {
+                    name: "Please enter your name",
+                    gender: "Please specify your gender",
+                    address: "Please enter your address",
+                    email: "Please enter a valid email address",
+                    username: "Please enter a valid username",
+                    password: {
+                        required: "Please provide a password",
+                        minlength: "Your password must be at least 5 characters long"
+                    }
+                },
+                submitHandler: function(form) {
+                    form.submit();
+                }
+            });
+        });'
+);
+$page->link('https://code.jquery.com/jquery-1.9.1.js');
+$page->link('https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js');
+$page->body('
+<h1>Login</h1>
+    <form action="" method="post" id="register-form" novalidate="novalidate">
+        <div class="label">Username</div><input type="text" id="username" name="username" /> <br />
+        <div class="label">Password</div><input type="password" id="password" name="password" /> <br />
+        <input type="submit" name="submit" value="Login" />
+    </form>'
+);
 
-$output = '';
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST["username"]);
-    $password = trim($_POST["password"]);
-
-    if (empty($username)) {
-        $output .= "<p class='output'>Please enter your username.</p>";
-    }
-
-    if (empty($password)) {
-        $output .= "<p class='output'>Please enter your password.</p>";
-    }
-
-    if (!empty($username) && !empty($password)) {
-        if ($username == 'admin' && $password == 'password') {
-            session_start();
-            $_SESSION['username'] = $username;
-            $_SESSION['password'] = $password;
-            $_SESSION['logged_in'] = true;
-            $output .= "<p class='output'>You have successfully logged in as $username.</p>";
-        } else {
-            $output .= "<p class='output'>Invalid username or password.</p>";
-        }
-    }
-}
-
-$content = '
-    <h1>Login to Your Website</h1>
-    ' . $output . '
-    <form action="" method="post" id="login-form" novalidate="novalidate">
-        <div class="label">Username</div><input type="text" id="username" name="username" /><br />
-        <div class="label">Password</div><input type="password" id="password" name="password" /><br />
-        <div style="margin-left:140px;"><input type="submit" name="submit" value="Login" /></div>
-    </form>
-';
-
-echo $page->display($content);
+echo $page->display();
